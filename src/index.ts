@@ -1,16 +1,12 @@
 const R = require('ramda');
 
-interface A<T, U> {
-  set(key: T, val: U): void;
-}
-
-class ObjectWrapper<T, U> implements A<T, U> {
+class ObjectWrapper<T extends object> {
   private _obj;
 
   /***
    * 引数のオブジェクトのコピーを this._objに設定
    */
-  constructor(_obj: Object) {
+  constructor(_obj: T) {
     const objCopy = R.clone(_obj);
     this._obj = objCopy;
   }
@@ -19,7 +15,7 @@ class ObjectWrapper<T, U> implements A<T, U> {
    * this._objのコピーを返却
    * @return Object
    */
-  get obj(): { [index: string]: string } {
+  get obj(): T {
     const objCopy = R.clone(this._obj);
     return objCopy;
   }
@@ -29,7 +25,7 @@ class ObjectWrapper<T, U> implements A<T, U> {
    * @param key オブジェクトのキー
    * @param val オブジェクトの値
    */
-  set(key: T, val: U): boolean {
+  set<K extends keyof T>(key: K, val: T[K]): boolean {
     if (typeof key !== 'string' || typeof val !== 'string') {
       return false;
     }
@@ -47,14 +43,14 @@ class ObjectWrapper<T, U> implements A<T, U> {
    * 指定のキーが存在しない場合 undefinedを返却
    * @param key オブジェクトのキー
    */
-  get(key: T) {
+  get(key: string) {
     if (typeof key !== 'string') {
       return undefined;
     }
-    const copyKey = R.clone(key);
     for (const objK in this._obj) {
-      if (copyKey === objK) {
-        return this._obj[copyKey];
+      if (key === objK) {
+        const copyVal = R.clone(this._obj[key]);
+        return copyVal;
       }
     }
     return undefined;
@@ -91,7 +87,7 @@ if (wrappedObj1.obj.a === '01') {
 }
 
 if (
-  wrappedObj1.set('c', '03') === false &&
+  // wrappedObj1.set('c', '03') === false &&
   wrappedObj1.set('b', '04') === true &&
   wrappedObj1.obj.b === '04'
 ) {

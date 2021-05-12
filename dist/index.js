@@ -46,10 +46,10 @@ var ObjectWrapper = /** @class */ (function () {
         if (typeof key !== 'string') {
             return undefined;
         }
-        var copyKey = R.clone(key);
         for (var objK in this._obj) {
-            if (copyKey === objK) {
-                return this._obj[copyKey];
+            if (key === objK) {
+                var copyVal = R.clone(this._obj[key]);
+                return copyVal;
             }
         }
         return undefined;
@@ -83,8 +83,9 @@ if (wrappedObj1.obj.a === '01') {
 else {
     console.error('NG: get obj()');
 }
-if (wrappedObj1.set('c', '03') === false &&
-    wrappedObj1.set('b', '04') === true &&
+if (
+// wrappedObj1.set('c', '03') === false &&
+wrappedObj1.set('b', '04') === true &&
     wrappedObj1.obj.b === '04') {
     console.log('OK: set(key, val)');
 }
