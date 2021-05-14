@@ -26,16 +26,8 @@ class ObjectWrapper<T extends object> {
    * @param val オブジェクトの値
    */
   set<K extends keyof T>(key: K, val: T[K]): boolean {
-    if (typeof key !== 'string' || typeof val !== 'string') {
-      return false;
-    }
-    for (const objK in this._obj) {
-      if (key === objK) {
-        this._obj[key] = val;
-        return true;
-      }
-    }
-    return false;
+    this._obj[key] = val;
+    return true;
   }
 
   /**
@@ -43,33 +35,17 @@ class ObjectWrapper<T extends object> {
    * 指定のキーが存在しない場合 undefinedを返却
    * @param key オブジェクトのキー
    */
-  get(key: string) {
-    if (typeof key !== 'string') {
-      return undefined;
-    }
-    for (const objK in this._obj) {
-      if (key === objK) {
-        const copyVal = R.clone(this._obj[key]);
-        return copyVal;
-      }
-    }
-    return undefined;
+  get<K extends keyof T>(key: K) {
+    const copyVal = R.clone(this._obj[key]);
+    return copyVal;
   }
 
   /**
    * 指定した値を持つkeyの配列を返却。該当のものがなければ空の配列を返却。
    */
-  findKeys(val: unknown) {
-    let array: string[] = [];
-    if (typeof val !== 'string') {
-      return array;
-    }
-    for (const key in this._obj) {
-      if (this._obj[key].includes(val)) {
-        array.push(key);
-      }
-    }
-    return array;
+  findKeys<K extends keyof T>(val: T[K]) {
+    const extractedKeys: string[] = R.keys(this._obj);
+    return extractedKeys.filter(key => this._obj[key] === val);
   }
 }
 
@@ -96,7 +72,10 @@ if (
   console.error('NG: set(key, val)');
 }
 
-if (wrappedObj1.get('b') === '04' && wrappedObj1.get('c') === undefined) {
+if (
+  wrappedObj1.get('b') === '04'
+  // && wrappedObj1.get('c') === undefined
+) {
   console.log('OK: get(key)');
 } else {
   console.error('NG: get(key)');

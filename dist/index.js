@@ -26,16 +26,8 @@ var ObjectWrapper = /** @class */ (function () {
      * @param val オブジェクトの値
      */
     ObjectWrapper.prototype.set = function (key, val) {
-        if (typeof key !== 'string' || typeof val !== 'string') {
-            return false;
-        }
-        for (var objK in this._obj) {
-            if (key === objK) {
-                this._obj[key] = val;
-                return true;
-            }
-        }
-        return false;
+        this._obj[key] = val;
+        return true;
     };
     /**
      * 指定したキーの値のコピーを返却
@@ -43,31 +35,16 @@ var ObjectWrapper = /** @class */ (function () {
      * @param key オブジェクトのキー
      */
     ObjectWrapper.prototype.get = function (key) {
-        if (typeof key !== 'string') {
-            return undefined;
-        }
-        for (var objK in this._obj) {
-            if (key === objK) {
-                var copyVal = R.clone(this._obj[key]);
-                return copyVal;
-            }
-        }
-        return undefined;
+        var copyVal = R.clone(this._obj[key]);
+        return copyVal;
     };
     /**
      * 指定した値を持つkeyの配列を返却。該当のものがなければ空の配列を返却。
      */
     ObjectWrapper.prototype.findKeys = function (val) {
-        var array = [];
-        if (typeof val !== 'string') {
-            return array;
-        }
-        for (var key in this._obj) {
-            if (this._obj[key].includes(val)) {
-                array.push(key);
-            }
-        }
-        return array;
+        var _this = this;
+        var extractedKeys = R.keys(this._obj);
+        return extractedKeys.filter(function (key) { return _this._obj[key] === val; });
     };
     return ObjectWrapper;
 }());
@@ -92,7 +69,9 @@ wrappedObj1.set('b', '04') === true &&
 else {
     console.error('NG: set(key, val)');
 }
-if (wrappedObj1.get('b') === '04' && wrappedObj1.get('c') === undefined) {
+if (wrappedObj1.get('b') === '04'
+// && wrappedObj1.get('c') === undefined
+) {
     console.log('OK: get(key)');
 }
 else {
