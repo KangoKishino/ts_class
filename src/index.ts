@@ -26,6 +26,9 @@ class ObjectWrapper<T extends object> {
    * @param val オブジェクトの値
    */
   set<K extends keyof T>(key: K, val: T[K]): boolean {
+    if (typeof key !== 'string' || typeof val !== 'string') {
+      return false;
+    }
     this._obj[key] = val;
     return true;
   }
